@@ -1,0 +1,33 @@
+---
+title: "Resume"
+author: "Moses Farley"
+format: html
+editor: visual
+date: "2024-09-03"
+---
+
+## Resume
+
+### Education
+
+-   Staunton High School
+
+-   William and Mary Undergraduate
+
+-   VCU Masters (go rams!)
+
+### Work Experience
+
+-   Virginia Cannabis Control Authority
+
+-   AidData Researcher
+
+### Interests
+
+-   Beer
+
+-   Gaming
+
+-   Not work
+
+![Garen dancing](images/dance-the-monkey.gif){fig-align="center"}
