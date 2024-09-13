@@ -1,0 +1,32 @@
+---
+title: "About me presentation"
+author: "Moses Farley"
+format: revealjs
+editor: visual
+---
+
+## About me
+
+### My name is Moses Farley
+
+I'm in my [first]{.underline} semester in a Masters in Computer Science
+
+## Interests
+
+My focus is in data science at the moment, but I'm trying to keep my options open. Ideally, I'd like to work in a field adjacent to Environmental engineering
+
+## Background
+
+I went to W&M for economics, and spent some time waiting for a Peace Corps deployment that, due to a series of delays from COVID, natural disasters, and election stability in Kenya, ended up falling through.
+
+## Environmental Science Interests
+
+I have a few years of experience with **GIS** (most QGIS), and am hoping to use my CS masters to get more technical expertise in it. I've become more fond of math as I've gotten more into CS as well, and I'd like to see if I can apply me of the courses like *linear algebra* to field like hydrology.
+
+## Hobbies
+
+-   I've picked up jazz guitar in last few years. I'd like to spend more time practicing and not playing Stardew Valley...
+
+-   I've read a majority of the books in the Lords of the Rings universe. I'm in the process of reading Unfinished Tales and as of now would definitely recommend it!
+
+![Map of Beleriand](images/beleriand_map.jpg){fig-align="center" width="281"}
