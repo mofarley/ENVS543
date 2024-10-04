@@ -1,0 +1,28 @@
+---
+title: "Film Data: 2022 and before"
+author: "Moses Farley"
+format: html
+editor: visual
+---
+
+## Abstract
+
+The document contains a summary of 998 films from 1898 through 2022. The database containing this information comes from Kaggle and was sourced from top rated films from iMDB for the given time frame. Of particular interest is reviews over the years, and whether more recent films - from the "Internet Age" (21st century) or roughly when online user reviews became more prolific - are generally better received than films from the 20th century.
+
+## Introduction
+
+Anecdotal evidence would seem to indicate that the number of online movie reviews are positively correlated with the increased proliferation of the internet and more specificly online movie databases like iMDB and RottenTomatoes. It's not as clear, however, whether having more reviews is good for a films average review score. In recent memory, "review bombing" has been a phenomenon where people en masse either tend to completely deride films for a variety of reasons (often times political ones) or praise it for similar reasons. In this document I'd like to attempt to analyse the following theses:
+
+1.  Films from before the year 2000 have, on average, systematically different average scores than films from the 20th century, and;
+
+2.  There are more reviews for films from 21st century than for films from the 20th century.
+
+The second proposal should be relatively straightforward to answer by simply comparing total number of reviews between the two time frames. The first point may, however, be slightly out of scope for this assignment, as it may require more sophisticated statistical analysis than I am capable of.
+
+```{r}
+films <- read.csv("IMDb_Data_final.csv")
+library( lubridate )
+library( dplyr )
+films |>
+  summarize("Ratings" = mean( IMDb.Rating ))
+```
