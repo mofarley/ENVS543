@@ -1,0 +1,102 @@
+---
+title: "RVA Urban Tree Inventory 2023"
+author: "Moses Farley"
+format: html
+knitr: 
+  opts_chunk: 
+    echo: false
+    warning: false
+editor: visual
+---
+
+## Abstract
+
+Overview of Richmond Urban Forest Inventory via RVA Public Works. The document includes an introduction which summarizes how the data is displayed and where it came from, a methods section regarding how summaries were produced, and a results section displaying pertinent data tables regarding urban forests in Richmond.
+
+## Introduction
+
+The data was collected from the website [reforestrichmond.org](https://www.reforestrichmond.org/richmond-tree-inventory), which linked a copy to the official Richmond government tree inventory csv file. That csv file included data on 120266 different tree specimens throughout the city, with on their species, trunk circumference in feet (dbh), condition, address, and coordinates. Overall, the focus of this document in respect to that data was to look at the diversity of species in Richmond, their general sizes and conditions, and what streets are the most forested.
+
+## Methods
+
+I used R's tidyverse library to analyze and produce my table for the data. For the table regarding unique species and forested streets, I used the stringr library to perform regular expressions in order to clean up the species and address columns from the original csv file for easier analysis. The kable library was used to create output graphs, and a variety of other functions from the dplyr library such as summary(), arrange(), and count() were used to group and arrange rows and columns and to produce summary statistics.
+
+## Results
+
+<details>
+
+<summary>List of Species (drop-down)</summary>
+
+```{r}
+#| tbl-cap: "Unique Species"
+#| tbl-cap-location: top
+#| label: species
+library( lubridate )
+library( dplyr )
+library( stringr )
+library( knitr )
+rva_trees <- read.csv("tree_inventory_2023.csv")
+rva_species <- unique( rva_trees$species)
+rva_species <- str_subset(rva_species, "((.*)\\.)|((.*)x$)", negate = TRUE) #remove unknown species
+species <- str_subset(rva_species, "\\s+") #remove empty or single word descripts like 'stump'
+rva_species |>
+  kable(col.names = "Scientific Names")
+```
+
+</details>
+
+#### Largest Species
+
+```{r}
+#| label: largest
+#| tbl-subcap: "dbh = trunk diameter at 4.5ft above ground"
+rva_trees |>
+  select(species, dbh, condition, addr) -> sizes
+  sizes |>
+    arrange(-dbh) -> sizes
+top6_size <- head(sizes)
+sizes |>
+  select(dbh) -> diam_4ft
+summary(diam_4ft) -> diam_4ft
+kables(
+  list(
+    kable(diam_4ft, digits = 3, valign = 't', align = 'l'),
+    kable(top6_size, valign = 't', align = 'cccl')),
+  caption = "Size Stats & Top 6 Trees")
+```
+
+```{r}
+#| label: Tree Conditions
+#| tbl-cap: "Tree Conditions"
+sizes %>%
+  count(condition) -> tree_conds
+  tree_conds %>%
+    slice(2:6) -> tree_conds #slice the cond. codes that have no descriptions
+    rename(tree_conds, count_n = n) -> tree_conds #rename bad auto col name
+tree_conds %>%
+  mutate(percentage = (count_n / 120662) * 100) -> tree_stuff #get percentage
+tree_stuff |>
+  kable(digits = 1, align = 'ccc')
+```
+
+```{r}
+#| label: Addresses
+#| tbl-cap: "Most Forested Streets"
+
+sizes %>%
+  select(addr) -> streets
+streets <- str_remove(streets$addr, "^\\d+")
+streets <- str_trim(streets)
+forested_st <- tibble(streets)
+count(forested_st, streets) -> most_trees
+most_trees %>%
+  rename(tree_count = n) -> most_trees
+most_trees %>% 
+  arrange(-tree_count) %>%
+  slice_head(n = 10) -> top10_sts
+top10_sts |>
+  kable()
+            
+
+  
+```
