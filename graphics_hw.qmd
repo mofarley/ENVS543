@@ -1,0 +1,124 @@
+---
+title: "Graphics Assignment"
+author: "Moses Farley"
+format: html
+editor: visual
+---
+
+## Procedures
+
+All plots are from the Rice river data set. The general procedure for each chart was to select and filter out whatever variables I am analyzing, and to apply a plot to them based off of the "cheat sheet" chart given in the assignment details. Comments are sparse since the first step of this process almost completely mirrors what was done for the function assignment. Charts were generally filled per the examples in given in documentations and from the relevant class slides.
+
+```{r}
+#| echo: false
+#| warning: false
+library( tidyverse )
+source("get_rice_data.R")
+```
+
+```{r}
+#| echo: false
+#| label: January rain
+rice_data <- get_rice_data()
+rice_data %>% #first steps will be filtering & selecting for each unique data used
+  select( Rain_in, Month, Weekday) %>%
+  filter(Month == "Jan") %>%
+  group_by(Weekday) %>%
+  summarise(sum(Rain_in)) -> jan_rain
+rename(jan_rain, Rain_total = "sum(Rain_in)") -> jan_rain
+#creating ggplots is largely the same throughout: select our data, assign aesthetics, and then pick a chart, theme, and create our custom labels if needed
+jan_bar <- ggplot(jan_rain, aes(x= Weekday, y = Rain_total)) + geom_bar(stat = "identity", fill = "steelblue") + labs(title = "Rain Inches by Weekday in January", y = "Total Inches")
+jan_bar  
+
+```
+
+```{r}
+#| echo: false
+#| label: January rain (old)
+plot.default(jan_rain$Weekday, jan_rain$Rain_total, main = "Rain Inches by Weekday in January (old)", xaxt = 'none',
+     xlab = "Weekday", ylab = "Rain inches") #use default to fix points and xaxt to rem old x ticks
+axis(side = 1, at = 1:7, labels = jan_rain$Weekday) #new x axis labels
+
+```
+
+```{r}
+#| echo: false
+#| label: Feb Temps
+
+rice_data %>%
+  select(Month, Weekday, AirTempF) %>%
+  filter(Month == "Feb") %>%
+  group_by(Weekday) %>%
+  summarise(mean(AirTempF)) -> temp_feb
+rename(temp_feb, Temp = "mean(AirTempF)") -> temp_feb
+febTemp_chart <- ggplot(temp_feb, aes(x= Weekday, y = Temp, group = 1)) + geom_line(colour = "aquamarine") + geom_point() + labs(title = 'Average Daily Temps in February') + theme_bw()
+febTemp_chart
+
+```
+
+```{r}
+#| echo: false
+#| title: Feb Temps (bad chart)
+
+plot.default(temp_feb$Weekday, temp_feb$Temp, type = "p", main = "Average Daily Temps in February (old)", xaxt = 'none',
+     xlab = "Weekday", ylab = "Avg Temp F") #use default to fix points and xaxt to rem old x ticks
+axis(side = 1, at = 1:7, labels = temp_feb$Weekday)
+```
+
+```{r}
+#| echo: false
+#| label: valentines day
+
+rice_data %>%
+  select(Day, Month, Depth_ft) %>%
+  filter(Month == "Feb" & Day == 14) %>%
+  select(Depth_ft) -> water_depth
+val_dep <- ggplot(water_depth, aes(x = row_number(Depth_ft), y = Depth_ft)) + geom_col(colour = "darkcyan") + labs(title = 'Water Depth on Valentines Day', x = 'Observations over day', y = 'Depth (ft)') + theme_classic()
+val_dep
+```
+
+```{r}
+#| echo: false
+#| title: Valentines day (old)
+
+plot(row_number(water_depth), water_depth$Depth_ft, main = "Water Depth on Valentines Day (old)", xlab = "Observations over day", ylab = "Water Depth (ft)")
+
+```
+
+```{r}
+#| echo: false
+#| label: Total Rain and Median Temps
+
+rice_data %>%
+  select(Month, Rain_in, AirTempF) %>%
+  group_by(Month) %>%
+  summarise(sum(Rain_in), median(AirTempF)) -> mth_chart
+rain_temps_chart <- ggplot(mth_chart, aes(x = `sum(Rain_in)`, y = `median(AirTempF)`)) +
+  geom_point(colour = "red") + geom_text(aes(label = Month), vjust = -0.5) + labs(title = 'Monthly Air Temp and Rainfall', x = 'Total Rainfall Inches', y = 'Median AirTemp F') + theme_dark()
+rain_temps_chart
+```
+
+```{r}
+#| echo: false
+#| label: Total Rain and Median Temps (old)
+plot(mth_chart$`sum(Rain_in)`, mth_chart$`median(AirTempF)`, main = "Monthly Air Temp and Rainfall (old)", xlab = 'Total Rainfall Inches', ylab = 'Median AirTemp F')
+
+```
+
+```{r}
+#| echo: false
+#| label: Jan 8th week wind speed
+rice_data %>%
+  select(Month, Day, WindDir, Weekday) %>%
+  filter(Month == 'Jan') %>%
+  filter(Day >= 5 & Day <= 11) -> tep
+wind_chart <- ggplot(tep, aes(x = Weekday, y = WindDir)) + geom_boxplot(colour = "darkseagreen") + labs(title = "Wind Direction Jan 8th Week", y = "Wind Direction (degrees)")
+wind_chart
+```
+
+```{r}
+#| echo: false
+#| label: Jan 8th week wind speed (old)
+
+plot(tep$Weekday, tep$WindDir, main = "Wind Direction Jan 8th Week", ylab = "Wind Direction (degrees)", xlab = "Weekday")
+```

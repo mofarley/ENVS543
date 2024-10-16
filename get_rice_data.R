@@ -26,4 +26,3 @@ get_rice_data <- function() {
   #NOTE: I didn't delete any columns. I don't know use cases for recordID right not, but may need it
   return( rice )
 }
-clean_rice <- get_rice_data()
