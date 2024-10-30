@@ -4,6 +4,8 @@ format:
   html:
     code-tools: true
     toc: false
+echo: false
+warning: false
 ---
 
 <center>
@@ -21,29 +23,6 @@ This homework is a bit quick but is designed to make sure that:
 
 The following code defines the set of necessary libraries for the next few weeks and then figures out which (potential) subset you need to install. It then installs them all in one call. It will not load them into your session, you'll have to do that later in your code chunks.
 
-```{r}
-needed_libraries <- c("sf",
-                      "maps",
-                      "units",
-                      "rgdal",
-                      "rgeos",
-                      "GGally",
-                      "raster",
-                      "mapproj",
-                      "leaflet",
-                      "rnaturalearth",
-                      "rnaturalearthdata"
-                      )
-# Determines which libraries you do not have
-#   already installed.
-need_inst <- setdiff( needed_libraries, 
-                      rownames( installed.packages()) )
-# Install the neccessary ones.
-if( length( need_inst ) ) {
-  install.packages( need_inst, dependencies = TRUE )
-}
-```
-
 ## The Data - Preprocessing
 
 The data for this is some site-level data from the Sonoran Desert bark beetle. The URL is in the next chunk, and is currently being hosted on my class [Github repository](https://github.com/dyerlab/ENVS-Lectures). Load it in.
@@ -59,7 +38,28 @@ Use the `leaflet` library and make an interactive map. If you can, add a label t
 There is a great tutorial [here](https://rstudio.github.io/leaflet/map_widget.html) on how to customize the leaflet display. You may want to go look at it and see what you can use to make a better display.
 
 ```{r}
+library(tidyverse)
+library(leaflet)
+library(sf)
 # make a quick leaflet map here to get an idea of 
+beetles <- read.csv(url)
+leaflet(data = beetles) %>%
+  addTiles() %>%  # see leaflet tutorial
+  addCircleMarkers(
+    ~Longitude, ~Latitude,  # coords for markers
+    label = ~as.character(Site),  # site column as labels
+    popup = ~paste("Site:", Site, "<br>",
+                   "Males:", Males, "<br>",
+                   "Females:", Females),  # popup info
+    radius = 5,  # size of markers
+    color = "blue",  # color the markers
+    fillOpacity = 0.8
+  ) %>%
+  addLabelOnlyMarkers(
+    ~Longitude, ~Latitude,
+    label = ~as.character(Site),
+    labelOptions = labelOptions(noHide = TRUE, direction = "top", textOnly = TRUE)
+  )
 ```
 
 ### Converting to `sf` Objects
@@ -67,20 +67,59 @@ There is a great tutorial [here](https://rstudio.github.io/leaflet/map_widget.ht
 Convert the spatial data in the beetle data.frame into an `sf` object. Make sure you set the Coordinate Reference System to $4326$.
 
 ```{r}
-# convert raw data to simple features in your data.frame
+#| label: beetle data cleanup
+beetle_sf <- beetles %>%
+  st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326)
+print(beetle_sf)  
 ```
 
 ### Questions
 
 For these questions, you may want to look at the `sf` cheat sheet [here](https://github.com/rstudio/cheatsheets/raw/main/sf.pdf) to find the appropriate geospatial function.
 
-1.  How far apart (in km) are the sites Constitución (`const`) and San Francisquito (`sfran`)?
+-   How far apart (in km) are the sites Constitución (`const`) and San Francisquito (`sfran`)?
 
-2.  Is there a correlation between habitat suitability and the ratio of males to female beetles sampled at each locale?
+```{r}
+sfr <- beetle_sf %>% filter(Site == 'sfran')
+cst <- beetle_sf %>% filter(Site == 'const')
+distance <- st_distance(sfr, cst)
+distance_km <- as.numeric(distance) / 1000
+print(distance_km)
+```
 
-3.  Make a plot using `ggplot` of the data with suitability as the size of the points and the sex ratio as the fill color.
+-   Is there a correlation between habitat suitability and the ratio of males to female beetles sampled at each locale? *yes, it looks like there is mild negative correlation based on the pearsons coefficient of -.399.*
 
-4.  Reproject the data and plot it again using an EPSG code defined for Mexico UTM zone 12N (see [epgs.io](https://epsg.io) for projections).
+```{r}
+cor.MtoF <- cor.test(beetles$Suitability, beetles$MFRatio)
+cor.MtoF
+```
+
+-   Make a plot using `ggplot` of the data with suitability as the size of the points and the sex ratio as the fill color.
+
+```{r}
+ggplot(beetles, aes(x = Longitude, y = Latitude)) +
+  geom_point(aes(size = Suitability, fill = MFRatio), shape = 21, color = "black", stroke = 0.5) +
+  scale_fill_viridis_c(option = "plasma", name = "M/F Ratio") +  # color scale for fill
+  scale_size_continuous(range = c(2, 10), name = "Suitability") +  # change size range
+  labs(title = "Beetle Habitat Suitability and MtoF Ratio",
+       x = "Longitude",
+       y = "Latitude") +
+  theme_minimal()
+```
+
+-   Reproject the data and plot it again using an EPSG code defined for Mexico UTM zone 12N (see [epgs.io](https://epsg.io) for projections).
+
+```{r}
+beetle_sf_utm <- st_transform(beetle_sf, crs = 32612)
+ggplot(beetle_sf_utm) +
+  geom_sf(aes(size = Suitability, fill = MFRatio), shape = 21, color = "black", stroke = 0.5) +
+  scale_fill_viridis_c(option = "plasma", name = "M/F Ratio") +
+  scale_size_continuous(range = c(2, 10), name = "Suitability") +
+  labs(title = "Beetle Habitat Suitability and Male-to-Female Ratio (UTM Zone 12N)",
+       x = "Eastward (m)",
+       y = "Northward (m)") +
+  theme_minimal()
+```
 
 ```{r}
 #| echo: false
