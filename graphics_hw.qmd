@@ -12,8 +12,7 @@ All plots are from the Rice river data set. The general procedure for each chart
 ```{r}
 #| echo: false
 #| warning: false
-library( tidyverse )
-source("get_rice_data.R")
+
 ```
 
 ```{r}

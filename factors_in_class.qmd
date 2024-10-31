@@ -1,0 +1,45 @@
+---
+title: "factors_in_class"
+author: "Moses Farley"
+format: html
+editor: visual
+---
+
+# Factors In-Class Activity
+
+```{r}
+#| label: rice function changes
+#| echo: true
+#| eval: false
+#From get_rice_data.R
+#Q1. Refactor Weekdays
+Weekday = factor(wday(DateTime, label = TRUE, abbr = TRUE), 
+                       levels = c("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"))
+
+#Q2. Get lunar data
+rice <- rice %>%
+    mutate(
+      #new col for weekend/weekday
+      Weekend = fct_collapse(Weekday, weekend = c("Sat", "Sun"), weekday = c("Mon", "Tue", "Wed", "Thu", "Fri")),
+      Lunar = lunar.phase(DateTime, name = TRUE) #Assigning moon phases using 'lunar' library
+    )
+```
+
+```{r}
+#| echo: false
+#| warning: false
+library(dplyr)
+library(ggplot2)
+library(forcats)
+source('get_rice_data.R')
+rice_updated <- get_rice_data()
+rice_updated %>%
+  select(Weekend, Weekday, Lunar) %>%
+  group_by(pick(Weekend, Weekday, Lunar)) %>%
+  summarise(Phase_count = n()) -> lunar_data
+colours <- rep(c('New','Waxing','Full','Waning'), length.out = nrow(lunar_data)) #repeat phase name
+lunar_chart <- ggplot(lunar_data, aes(x = row_number(Weekday), y = Phase_count)) + geom_col(aes(fill = colours)) + scale_x_discrete(limits = lunar_data$Weekday) + labs(title = 'Phases by Weekday', x = 'Weekday/Moon Phase', y = 'Phase Count')
+lunar_chart
+lunar_data %>%
+  kable()
+```

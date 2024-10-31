@@ -7,6 +7,8 @@
 library( dplyr )
 library( knitr )
 library( lubridate)
+library(forcats)
+library(lunar)
 get_rice_data <- function() {
   url <- "https://docs.google.com/spreadsheets/d/1Mk1YGH9LqjF7drJE-td1G_JkdADOU0eMlrP01WFBT8s/pub?gid=0&single=true&output=csv"
   rice <- read.csv( url ) 
@@ -20,9 +22,15 @@ get_rice_data <- function() {
       # didn't specify any levels
       Month = factor(month(DateTime, label = TRUE, abbr = TRUE), ordered = TRUE),  # ordered month
       Day = day(DateTime),
-      Weekday = factor(wday(DateTime, label = TRUE, abbr = TRUE), ordered = TRUE),  # ordered weekday
+      Weekday = factor(wday(DateTime, label = TRUE, abbr = TRUE), 
+                       levels = c("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")),  # reordered weekday
       H2O_TempF = H2O_TempC*(9/5)+32 #I believe this is the only conversion I need
     )
-  #NOTE: I didn't delete any columns. I don't know use cases for recordID right not, but may need it
+  rice <- rice %>%
+    mutate(
+      #new col for weekend/weekday
+      Weekend = fct_collapse(Weekday, weekend = c("Sat", "Sun"), weekday = c("Mon", "Tue", "Wed", "Thu", "Fri")),
+      Lunar = lunar.phase(DateTime, name = TRUE) #Assigning moon phases using 'lunar' library
+    )
   return( rice )
 }
