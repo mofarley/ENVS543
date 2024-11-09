@@ -1,0 +1,51 @@
+---
+title: "RasterHW"
+author: "Moses Farley"
+format: html
+editor: visual
+---
+
+```{r}
+#| echo: false
+library(tidyverse)
+library(raster)
+library(sf)
+raster_url <- "https://github.com/DyerlabTeaching/Raster-Data/raw/main/data/alt_22.tif"
+beetle_url <- "https://raw.githubusercontent.com/DyerlabTeaching/Raster-Data/main/data/AraptusDispersalBias.csv"
+r <- raster(raster_url)
+read_csv( beetle_url ) %>% 
+  st_as_sf( coords=c("Longitude","Latitude"), crs=4326 ) -> beetles
+bbox <- c(-116, -109, 22, 30)
+baja_extent <- extent(bbox)
+cropped_r <- crop(r, baja_extent, snap='out')
+rm(r)
+cropped_r %>%
+  rasterToPoints() %>%
+  as.data.frame() %>% 
+  transmute(Longitude=x,
+            Latitude=y,
+            Elevation=alt_22)  -> r.df
+r.df %>%
+  ggplot()  + 
+  geom_raster( aes( x = Longitude, 
+                    y = Latitude, 
+                    fill = Elevation) ) + 
+  coord_equal() +
+  theme_minimal() -> baja_elevation
+baja_elevation + 
+  scale_fill_gradient2( low = "darkolivegreen",
+                        mid = "yellow",
+                        high = "red", 
+                        midpoint = 1000 ) -> baja_map
+baja_map + 
+  geom_sf( aes(size = MFRatio ), 
+           data = beetles, 
+           color = "darkmagenta",
+           alpha = 0.75)
+plot( cropped_r )
+click( cropped_r, 
+       xy=TRUE, 
+       value=TRUE, 
+       n=3 ) -> points
+points
+```
