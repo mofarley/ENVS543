@@ -6,7 +6,9 @@ editor: visual
 ---
 
 ```{r}
+#| title: elevation and gender map
 #| echo: false
+#| warning: false
 library(tidyverse)
 library(raster)
 library(sf)
@@ -17,10 +19,91 @@ read_csv( beetle_url ) %>%
   st_as_sf( coords=c("Longitude","Latitude"), crs=4326 ) -> beetles
 bbox <- c(-116, -109, 22, 30)
 baja_extent <- extent(bbox)
-cropped_r <- crop(r, baja_extent)
+cropped_r <- crop(r, baja_extent, snap='out')
 rm(r)
-plot( cropped_r )
-plot( beetles, add=TRUE, col="purple", pch=16, cex=1.5)
-click( cropped_r, xy=TRUE, 
-       n=3 ) -> points
+cropped_r %>%
+  rasterToPoints() %>%
+  as.data.frame() %>% 
+  transmute(Longitude=x,
+            Latitude=y,
+            Elevation=alt_22)  -> r.df
+r.df %>%
+  ggplot()  + 
+  geom_raster( aes( x = Longitude, 
+                    y = Latitude, 
+                    fill = Elevation) ) + 
+  coord_equal() +
+  theme_minimal() -> baja_elevation
+baja_elevation + 
+  scale_fill_gradient2( low = "darkolivegreen",
+                        mid = "yellow",
+                        high = "red", 
+                        midpoint = 1000 ) -> baja_map
+baja_map + 
+  geom_sf( aes(size = MFRatio ), 
+           data = beetles, 
+           color = "darkmagenta",
+           alpha = 0.75) + labs(title = 'Elevation and Gender Ratio')
 ```
+
+```{r}
+#| title: Crop and filter below site 75
+#| echo: false
+#| warning: false
+beetle_filter <- beetles %>%
+  mutate(y = st_coordinates(beetles)[, 'Y']) %>%
+  filter(y < 28.8)
+bbox75 <- c(-116, -109, 22, 28.8) #found using click()
+baja_extent75 <- extent(bbox75)
+crop75 <- crop(cropped_r, baja_extent75, snap='out')
+plot( crop75, main ="Crop and filter below site 75" )
+plot( beetle_filter, add=TRUE, col="purple", pch=16, cex=1)
+text(st_coordinates(beetles), labels = beetles$Site, pos = 3, cex = 0.4, col = "black")
+```
+
+```{r}
+#| title: State division Gender ratio Avg
+#| echo: false
+
+beetle_state <- beetles %>%
+  mutate(latitude = st_coordinates(beetles)[, "Y"])
+beetle_state <- beetle_state %>%
+  mutate(region = if_else(latitude >= 28, "Baja California Norte", "Baja California Sur"))
+
+mean_sex_ratio <- beetle_state %>%
+  group_by(region) %>%
+  summarise(avg_sex_ratio = mean(MFRatio, na.rm = TRUE))
+
+ggplot(mean_sex_ratio, aes(x = region, y = avg_sex_ratio, fill = region)) +
+  geom_col() +
+  theme_minimal() +
+  labs(
+    title = "Avg Sex Ratio by State",
+    x = "Region",
+    y = "Average Sex Ratio (M/F)"
+  ) +
+  scale_fill_manual(values = c("Baja California Norte" = "blue", "Baja California Sur" = "grey"))
+```
+
+```{r}
+#| title: Elevation to MF ratio
+#| echo: false
+
+beetles$elevation <- raster::extract(cropped_r, beetles) #extract
+
+correlation_test <- cor.test(beetles$MFRatio, beetles$elevation, use = "complete.obs")
+
+ggplot(beetles, aes(x = elevation, y = MFRatio)) +
+  geom_point(color = "purple", size = 3) +
+  geom_smooth(method = "lm", se = TRUE, color = "blue", linetype = "dashed") +
+  theme_minimal() +
+  labs(
+    title = "Relationship Between MFRatio and Elevation",
+    x = "Elevation (m)",
+    y = "Sex Ratio (M/F)"
+  )
+
+correlation_test
+```
+
+Based on the results of the Pearson correlation test, there is **no significant linear relationship** between the sex ratio (`MFRatio`) and elevation (r = -0.103, p = 0.580). The weak correlation and non-significant p-value suggest that changes in elevation do not appear to be associated with changes in the sex ratio of beetles in this sample.

@@ -15,4 +15,3 @@ plot( beetles, add=TRUE, col="purple", pch=16, cex=1.5)
 text(st_coordinates(beetles), labels = beetles$Site, pos = 3, cex = 0.8, col = "black")
 click( cropped_r, xy=TRUE, 
        n=3 ) -> points
-

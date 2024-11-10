@@ -69,40 +69,7 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<div class="cell">
-<div class="cell-output cell-output-stderr">
-<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-✔ dplyr     1.1.4     ✔ readr     2.1.5
-✔ forcats   1.0.0     ✔ stringr   1.5.1
-✔ ggplot2   3.5.1     ✔ tibble    3.2.1
-✔ lubridate 1.9.3     ✔ tidyr     1.3.1
-✔ purrr     1.0.2     
-── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-✖ dplyr::filter() masks stats::filter()
-✖ dplyr::lag()    masks stats::lag()
-ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors
-Loading required package: sp
-
-
-Attaching package: 'raster'
-
-
-The following object is masked from 'package:dplyr':
-
-    select
-
-
-Linking to GEOS 3.11.0, GDAL 3.5.3, PROJ 9.1.0; sf_use_s2() is TRUE
-
-Rows: 31 Columns: 9
-── Column specification ────────────────────────────────────────────────────────
-Delimiter: ","
-chr (1): Site
-dbl (8): Males, Females, Suitability, MFRatio, GenVarArapat, GenVarEuphli, L...
-
-ℹ Use `spec()` to retrieve the full column specification for this data.
-ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-</div>
+<div class="cell" title="elevation and gender map">
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -110,10 +77,51 @@ dbl (8): Males, Females, Suitability, MFRatio, GenVarArapat, GenVarEuphli, L...
 </figure>
 </div>
 </div>
+</div>
+<div class="cell" title="Crop and filter below site 75">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="rasterHW_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell" title="State division Gender ratio Avg">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="rasterHW_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell" title="Elevation to MF ratio">
+<div class="cell-output cell-output-stderr">
+<pre><code>`geom_smooth()` using formula = 'y ~ x'</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="rasterHW_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
 <div class="cell-output cell-output-stdout">
-<pre><code>NULL</code></pre>
+<pre><code>
+    Pearson's product-moment correlation
+
+data:  beetles$MFRatio and beetles$elevation
+t = -0.55949, df = 29, p-value = 0.5801
+alternative hypothesis: true correlation is not equal to 0
+95 percent confidence interval:
+ -0.4415112  0.2605426
+sample estimates:
+       cor 
+-0.1033377 </code></pre>
 </div>
 </div>
+<p>Based on the results of the Pearson correlation test, there is <strong>no significant linear relationship</strong> between the sex ratio (<code>MFRatio</code>) and elevation (r = -0.103, p = 0.580). The weak correlation and non-significant p-value suggest that changes in elevation do not appear to be associated with changes in the sex ratio of beetles in this sample.</p>
 
 </main>
 <!-- /main column -->
