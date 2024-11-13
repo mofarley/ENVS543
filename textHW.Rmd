@@ -1,0 +1,64 @@
+---
+title: "textHW"
+author: "Moses Farley"
+date: "2024-11-12"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(readr)
+library(stringr)
+library(wordcloud)
+
+file_path <- "LifeSciencesCurriculum.txt"
+course_data <- read_lines(file_path)
+
+course_df <- tibble(line = course_data) %>%
+  filter(str_detect(line, "^[A-Z]{2,4} \\d{3}")) %>%
+  mutate(
+    program = str_extract(line, "^[A-Z]{2,4}"),
+    course_number = as.numeric(str_extract(line, "\\d{3}")),
+    course_title = str_trim(str_extract(line, "(?<=\\.\\s).+"))
+  )
+
+course_df <- course_df %>%
+  mutate(course_level = case_when(
+    course_number >= 100 & course_number < 200 ~ "100-level",
+    course_number >= 200 & course_number < 300 ~ "200-level",
+    course_number >= 300 & course_number < 400 ~ "300-level",
+    course_number >= 400 & course_number < 500 ~ "400-level",
+    TRUE ~ "Other"
+  ))
+course_count <- course_df %>%
+  filter(course_level != "Other") %>%
+  count(program, course_level)
+
+ggplot(course_count, aes(x = course_level, y = n, fill = program)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(
+    title = "# of courses by level and program",
+    x = "Course level",
+    y = "# of Courses",
+    fill = "program"
+  ) +
+  scale_fill_brewer(palette = "Spectral") + theme_classic()
+
+# tokenize words from course titles
+word_count <- course_df %>%
+  mutate(title_clean = str_remove_all(course_title, "[[:punct:]]|\\d"),
+    words = str_split(title_clean, "\\s+")) %>%
+  unnest(words) %>%
+  filter(!words %in% c("and", "in", "of", "to", "the", "for", "with", "a", "an", "A", "Hours")) %>%
+  count(words, sort = TRUE)
+
+# simple word cloud
+cloud_color = brewer.pal(6, "Set1")
+word_count %>%
+  with(wordcloud(words, n, random.order = FALSE, max.words = 50, random.color = TRUE, colors = cloud_color))
+title(main = "Word cloud for course titles")
+```
