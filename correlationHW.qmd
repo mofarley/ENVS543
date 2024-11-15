@@ -1,0 +1,73 @@
+---
+title: "correlationHW"
+author: "Moses Farley"
+date: 11-14-2024
+format: html
+echo: false
+warning: false
+editor: visual
+---
+
+```{r}
+#| title: ggpairs
+#| warning: false
+library(tidyverse)
+library(GGally)
+source('get_rice_data.R')
+fuck_rice <- get_rice_data()
+fuck_rice %>%
+  select(PAR, WindSpeed_mph, WindDir, AirTempF, RelHumidity, BP_HG, Month, Day) %>%
+  filter(Month == "Feb") %>%
+  filter(between(Day, 10, 15)) %>%
+  select(PAR, WindSpeed_mph, WindDir, AirTempF, RelHumidity, BP_HG) -> poop
+ggpairs(poop)
+```
+
+Question 2. It appears that Barometric Pressure and Air Temperature have the strongest correlation at an estimated -.7115. The 95% confidence interval for the correlation is between -.7497 and -.6687.
+
+```{r}
+#| title: correlation
+cor.test(poop$AirTempF, poop$BP_HG) -> fart
+fart
+```
+
+```{r}
+shart <- head(fuck_rice, 40)
+shart %>%
+  select(AirTempF, BP_HG) -> shart
+shap_temp <- shapiro.test(shart$AirTempF)
+shap_pres <- shapiro.test(shart$BP_HG)
+shap_pres
+shap_temp
+```
+
+Q3. For pressure, the low p-value indicates rejection of the null, and the assumption that it is not normally distributed. For temp, the high p-value indicates a failure to reject the null, and the assumption that the data is normally distributed.
+
+Q4. We want a non-paremetric test, so Spearman's may be a good choice since does not assume normality and tends to work well even if the data has outliers.
+
+```{r}
+qqnorm(shart$BP_HG) -> ass
+ass
+```
+
+Q5. The points do not follow a straight diagonal line, more so there is almost an s shape that is often indicative of non-normality. Also the flat sections suggest that there are many repeated or identical values, indicating possible lack of variability. Points on the outliers also seem to deviate pretty significantly from the expected diagonal line. Reason why the data looks like this could be due to atmospheric patterns/stability, like with high or low pressure systems. It could also be due to rounding of data collection, as the data seems to be limited to the hundredths place.
+
+```{r}
+x <- shart$AirTempF
+y <- shart$BP_HG
+df <- data.frame( Estimate = factor( c( "Original",
+                                        rep("Permuted", 999))), 
+                  rho =  c( cor.test( x, y )$estimate,
+                            rep(NA, 999)) )
+for( i in 2:1000) {
+  yhat <- sample( y,   # this shuffles the data in y
+                  size = length(y), 
+                  replace = FALSE)
+  model <- cor.test( x, yhat )
+  df$rho[i] <- model$estimate 
+}
+ggplot( df ) + 
+  geom_histogram( aes(rho, fill=Estimate ) )
+```
+
+Q6. According to the permutation approach, the distribution appears centered around 0 suggesting that, under the null hypothesis, the expected correlation is close to zero. The observed correlation of -0.6 lies pretty far outside the range of the permuted correlations, indicating that it is not consistent with what we would expect under the null hypothesis of no correlation.
