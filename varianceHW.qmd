@@ -1,0 +1,201 @@
+---
+title: "Analysis of Variance"
+author: Moses Fartley
+subtitle: "In Class Activity"
+execute: 
+  echo: false
+  warning: false
+format: 
+  html:
+    code-tools: true
+    toc: false
+---
+
+Here is some new data to play with a bit to explore one-way and two-way analysis of variance models. These data represent weight data associated with three different diet types. There are 76 observations of individuals with the following characteristics:
+
+-   Gender (0/1)
+-   Age (earth years. 🤓)
+-   Height (cm)
+-   Pre.weight & weight6weeks (kg)
+-   Diet (1,2,3)
+
+The data are located as a CSV file named `DietData.csv` linked from the Canvas page. Load the data in and format things so they look correctly to you.
+
+```{r}
+# load the data in here
+library(tidyverse)
+library(GGally)
+diet_data <- read.csv("DietData.csv")
+diet_data %>%
+  mutate(Diet = as.factor(Diet)) -> diet_data
+```
+
+## Exploratory Data Anlsysis
+
+One of the first things to do is to look at the data and see if there are any obvious things. Go ahead and explore these data visually. What do you see?
+
+```{r}
+# Data visualization
+diet_data %>%
+  select(gender, Age, Height, pre.weight, weight6weeks, Diet) -> pair_comp
+ggpairs(pair_comp)
+```
+
+*Correlation between variables are mostly as expected, with strong correlations between gender and height and weight. Surprisingly diet doesn't seem to correlate strongly with physical characteristics, and height and weight have lower correlations than I would expect.*
+
+## Estimating Mean Values
+
+Make a table of Weigth Loss by gender and diet.
+
+```{r}
+# Table output
+
+diet_data %>% 
+  select(gender, Age, pre.weight, Diet, weight6weeks) -> weight_loss
+weight_loss %>%
+  mutate(wt_loss = pre.weight - weight6weeks) -> weight_loss
+```
+
+## 1-Way Analysis of Variance
+
+*Diet Issues:*
+
+The underlying linear model.
+
+$$
+y_{ij} = \mu + \tau_{Diet, i} + \epsilon_j
+$$
+
+Test the null hypothesis, $H_O:$ *There is no effect of diet on weight loss* (e.g., $\tau_{Diet-1} = \tau_{Diet-2} = \tau_{Diet-3} = 0.0$). Is there evidence for one diet producing more weight loss than the others? Create an `aov` analysis and assign it to the variable `fit.diet` and examine its contents.
+
+```{r}
+# Define model
+fit.diet <- aov(weight_loss$wt_loss ~ weight_loss$Diet, data = weight_loss)
+summary(fit.diet)
+```
+
+*With a p-value below .01, there is sufficient reason to reject the null hypothesis and assume there is an effect for diet on weight loss.*
+
+Are they all significantly different? Try the `TukeyHSD()` Interpret the results.
+
+```{r}
+# Posthoc test
+tukey_result <- TukeyHSD(fit.diet)
+tukey_result
+```
+
+*Diet 3 seems to be significantly different (p\<.05) than 1 and 2, whereas 1 and 2 do not appear to be significantly different. Therefore, we probably want to see if Diet 3 is more or less effective that 1 & 2.*
+
+How much of the variation is explained? If you notice when you do a summary from a `lm()` (regression) model, it gives you the $R^2$ values directly (remember $R^2 = \frac{SS_{model}}{SS_{Error}}$). Does `summary()` of your `aov` model give you that?
+
+```{r}
+# How much variance?
+lm(formula = weight_loss$wt_loss ~ weight_loss$Diet, data = weight_loss) -> diet_lm
+summary(diet_lm)
+```
+
+*Accoring to the lm model, the r-squared are pretty low (around 10%) which indicates that not a lot of the variance is explained by Diet. The aov model does not appear to give an r-squared estimate.*
+
+Since I asked the question, the answer is probably no. Why does it not do this? Probably for historical reasons, which are a bit of a pain in the backside. That being said, there are some `tidy` ways to fix this issue. I'm going to use the `broom` package which allows us to clean up (or tidy if you will) the model objects. This will take the model object and pull out *all* the ANOVA table stuff and put it into a `tibble`.
+
+```{r}
+ library( broom ) 
+# use your model fit next (I called mine fit.diet)
+tidy_diet <- tidy( fit.diet )
+tidy_diet
+```
+
+Now, since it is all easily accessible, we can calculate the $R^2$ from the new model output.
+
+```{r}
+# Estimate the variance explained from the raw sums of squares
+r2_Diet <- tidy_diet$sumsq[1] / sum( tidy_diet$sumsq )
+r2_Diet 
+```
+
+*Gender:*
+
+The underlying linear model.
+
+$y_{ij} = \mu + \tau_{gender, i} + \epsilon_j$
+
+Independent of the diet, test the null hypothesis $H_O:$ *There is no difference in weight loss between genders* (e.g., \$\tau\*{gender-0} =\* \tau{gender-2} = 0.0 \$). Is there evidence for one gender being significantly different than another? How much of the variation is explained (another $R^2$ by gender)?
+
+```{r}
+# partition effects
+gender_wtLoss <- weight_loss %>% select(gender, Diet, wt_loss) %>%
+  mutate(gender = as.factor(gender))
+gender.fit <- aov(weight_loss$wt_loss ~ weight_loss$gender, data = weight_loss)
+summary(gender.fit)
+lm(formula = weight_loss$wt_loss ~ weight_loss$gender, data = weight_loss) -> gender.lm
+summary(gender.lm)
+```
+
+*For gender, we should go ahead and reject our null hypothesis and assume that it isn't a big factor for weight loss (large p = .835). According to our lm model for gender, very little variance looks to be explained by this variable, with an r\^2 close to zero (-.01).*
+
+How do you interpret these results thus far?
+
+*One of those diets seems to do explain some sort of weight change, whereas nothing else in our data set is very compelling so far.*
+
+# Do genders respond differently to diets?
+
+$y_{ijk} = \mu + \tau_{Diet,i} + \tau_{gender,j} + \epsilon_k$
+
+So here we do something a bit different. We want to simultaneously ask the following questions:
+
+-   Do diets influence weight loss?
+-   Do genders influence weight loss?
+-   Is there an interaction where different genders respond differently to different diets?
+
+In $R$, this is done as:
+
+```{r}
+# diet model
+```
+
+```{r}
+# gender model
+```
+
+```{r}
+# interaction model
+interaction_model <- aov(gender_wtLoss$wt_loss ~ gender_wtLoss$gender * gender_wtLoss$Diet, data = weight_loss)
+summary(interaction_model)
+TukeyHSD(interaction_model) -> tuk_gender.diet
+tuk_gender.diet
+```
+
+What is the $R^2$ for this model?
+
+```{r}
+# best model variance explained
+lm(formula = gender_wtLoss$wt_loss ~ gender_wtLoss$gender * gender_wtLoss$Diet, data = weight_loss) -> lm_gender.diet
+summary(lm_gender.diet)
+```
+
+# Which Model is Best?
+
+How would you compare the models you generated? How do you interpret the findings?
+
+*Explain, in words, your findings and interpretation of these findings*
+
+```{r}
+#| echo: false
+#| warning: false
+tuk_gender.diet$`gender_wtLoss$gender:gender_wtLoss$Diet` -> shit
+as.data.frame(shit) -> shit
+shit %>% select(4) -> diff_gender.diet
+diff_gender.diet <- rownames_to_column(as.data.frame(diff_gender.diet), var = "Comparison")
+ggplot(diff_gender.diet, aes(x = Comparison, y = diff_gender.diet$`p adj`)) +
+  geom_point(size = 4, color = "blue") +
+  geom_hline(yintercept = 0.05, linetype = "dashed", color = "red") +
+  labs(
+    title = "tukey adjusted p-values",
+    x = "Comparison",
+    y = "P-Value"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+*Overall, my interpretation is that diet is almost certainly the most important factor regarding weight loss. Interestingly, the tukey chart above for the two-way ANOVA for gender and diet indicates that men were more the most responsive to diet 3. This is seen via the differences between the different diets for men (I added the red line to represent a .05 significance level), as well as with the relatively high p-value of around .5 for diet 3 for men vs women (seen on the x axis as 1:3-0:3). My guess would be that men generally eat more protein (or slightly less probable to me being carbs or sugar) than women, and that diet 3 is a reduced protein diet and that it has a more significant impact on men. I'd be interested to see how exercise would impact weight loss, and whether there were significant differences between men and women in terms of weight loss when it is added as a variable.*
