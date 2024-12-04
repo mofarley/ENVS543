@@ -1,0 +1,77 @@
+---
+title: "NonParametric & Counting Statistics HW"
+author: "Moses Farley"
+date: 12/2/2024
+execute: 
+  echo: false
+  warning: false
+  message: false
+format: 
+  html:
+    code-tools: true
+    toc: false
+---
+
+1.  To determine if the change in the medication significantly reduced the proportion of patients experiencing side effects, we can perform a binomial test. This test compares the observed proportion of side effects in the clinical trial to the historical proportion (50%) to see if the difference is statistically significant.In Defining the problem we want our null hypothesis to be the the proportion of patients with side effects after the change is still 50% and our alternate hypothesis to be the proportion of patients with side effects after the change is less than 50%.
+
+```{r}
+#| label: Q1
+library(tidyverse)
+n_patients <- 19
+side_effects <- 3
+p0 <-.5
+result <- binom.test(side_effects, n_patients, p = p0)
+print(result)
+```
+
+Given the the p-value of .004425 is below the significance value of .05, we should reject our null hypothesis and assume that the change did make a significant difference.
+
+2.  To evaluate whether the two treatments have the same impact on turbidity, we can create a contingency table and use a chi-squared test for independence. Since turbidity is categorized into four groups, we can compare the distribution of observations across these groups for the two treatments.
+
+```{r}
+#| label: Q2
+ntu_stuff <- read_csv('ntu_data.csv')
+ntu_stuff %>%
+  mutate(Treatment = as.factor(Treatment),
+         Turb_group = cut(NTU,
+          breaks = c(-Inf, 15, 22, 30, Inf),
+          labels = c("0-15 NTU", "16-22 NTU", "23-30 NTU", "31+ NTU"),
+          right = TRUE)) -> ntu_stuff
+cont_table <- table(ntu_stuff$Treatment, ntu_stuff$Turb_group)
+print(cont_table)
+chi_sq_turb <- chisq.test(cont_table)
+print(chi_sq_turb)
+```
+
+Since the p-value for our chi-squared test is below .05, we can reject the null hypothesis that there is not a difference in impact for the two group. Since we are not given a defined expectation for treatment results, we can see below what the expected values of turbidity are using the expectation that the distribution of outcomes is determined by the the number of groups.
+
+```{r}
+print(chi_sq_turb$expected)
+```
+
+3.  Looking at a scatter plot and histogram of the data, there is an indication that the data may be non-normal or heteroscedastic (especially in regards to the right end/higher scores on the scatter plot). Running a [Bartlett test](https://cran.r-project.org/web/packages/olsrr/vignettes/heteroskedasticity.html) on our two variables, we get a p-value of .423 which allows us to accept the Bartlett null hypothesis that the variance is constant. For testing normality, we can use a [Shapiro-Wilk's](https://www.sthda.com/english/wiki/normality-test-in-r#:~:text=There%20are%20several%20methods%20for,the%20distribution%20is%20non%2Dnormal.) test, which gives a p-value of .068 which, being greater than .05, allows us to accept the null hypthesis that the data is normally distributed. With these thing in mind, we can run a pearson correlation on our data, which gives a p-value of .018 and allows us to reject our null hypothesis that there is no correlation between GPA and GRE scores and assume rather that there is a correlation between the two.
+
+```{r}
+#| label: Q3
+library(olsrr)
+gpa_gre <- read_csv('grad_school.csv')
+gpa_corr <- cor(gpa_gre$GPA, gpa_gre$GRE)
+lm_model <- lm(GRE ~ GPA, data = gpa_gre)
+summary(lm_model)
+poopoo <- ggplot(gpa_gre, aes(x = GRE)) + geom_histogram()
+poopoo
+uggo <- ols_test_breusch_pagan(lm_model)
+print(uggo)
+faa <- shapiro.test(gpa_gre$GRE)
+print(faa)
+```
+
+4.  Since the "Treatment" variable is ordinal (categorized A, B, C, and D), we would like to utilize a non-parametric ANOVA test like the Kruskal-Wallis Test to determine whether different treatments influence seed yields. Running the test for seed yield by treatment type, the resulting p-value of 1.141e-05 is below the significance value of .05, which allows us to reject our null hypothesis that treatment does not impact yield and assume that it does in fact affect seed output.
+
+```{r}
+seeds <- read_csv('DogwoodSeeds.csv')
+seeds %>%
+  mutate(Treatment = as.factor(Treatment)) -> seeds
+fit <- kruskal.test(seeds$Seeds ~ seeds$Treatment, data = seeds)
+fit
+```
