@@ -92,7 +92,9 @@ Analysis of invasive mutualism?
 
     -   Equation crucial to the Dynamic Programming aspect is mass action disease incidence (homogeneous populations mixing) equation.
 
-    -   ![Mass action disease incidence](images/equation.png){width="447"}
+    -   
+
+        ![Mass action disease incidence](images/equation.png){width="447"}
 
 -   Better background on how to obtain sample data (no data availability for Torino study)
 
