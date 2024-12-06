@@ -1,7 +1,10 @@
 ---
 title: "591 Presentation"
 author: "Moses Farley"
-format: revealjs
+format: 
+  revealjs:
+    smaller: true
+    scrollable: true
 editor: visual
 ---
 
@@ -30,6 +33,10 @@ editor: visual
 -   A smooth change in a parameter causes them to swap stability. Imagine the "smooth change" as a turning a knob.
 
 -   Really simplified definition without getting in differential equations, eigenvalues (I'm not able to cover lol)
+
+## Term 2: Stable vs. Unstable Equilibrium
+
+![](images/maxresdefault.jpg)
 
 ## Term 2: Example using \[blank\] populations
 
