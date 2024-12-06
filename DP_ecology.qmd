@@ -5,8 +5,6 @@ format: revealjs
 editor: visual
 ---
 
-# Ecological Management
-
 ## Inspiration
 
 [![](images/dp_ecosystem.png)](https://www.mdpi.com/1999-4893/16/3/139)
