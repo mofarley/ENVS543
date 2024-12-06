@@ -104,6 +104,5 @@ Analysis of invasive mutualism?
 
 1.  Rosso, A.; Venturino, E. A Dynamic Programming Approach to Ecosystem Management. Algorithms 2023, 16, 139. https://doi.org/10.3390/a16030139
 2.  Rosso, A.; Venturino, E. Comparison of two mathematical models for the Echinococcus multilocularis-red foxes-rodents interactions. Algorithms 2021. https://repositorio.utem.cl/handle/30081993/1172
-3.  Hu, T.C.; Morgenthaler, H.D. Dynamic Programming and Graph Optimization Problems. Comput. Math. Appl. 1994, 27, 53–58.
+3.  Empirical dynamic programming for model-free ecosystem-based management. [**https://doi.org/10.1111/2041-210X.14302**](https://doi.org/10.1111/2041-210X.14302)
 4.  Yakowitz, S. Dynamic programming applications in water resources. Water Resour. Res. 1982, 18, 673–696.
-5.  Murray, J.D. Mathematical Biology; Springer: Berlin/Heidelberg, Germany, 1993.
