@@ -34,26 +34,19 @@ editor: visual
 ## Term 2: Example using \[blank\] populations
 
 -   State A: low population & State B: high population
-
--   Before the switch (low knob setting):
-
-    -   State A is stable and the population tends to stay low.
-
+-   Before the switch (low knob setting): State A is stable and the population tends to stay low.
     -   State B is unstable - if the population gets too high, something (like lack of food) will cause it to crash back down.
-
--   After the switch (high knob setting):
-
-    -   State B is now stable - the population tends to stay high.
-
+-   After the switch (high knob setting): State B is now stable - the population tends to stay high.
     -   State A is now unstable - if the population gets too low, something (like random deaths) could wipe it out completely.
-
-As you gradually increase the knob setting (maybe by introducing more food), the two populations "switch places" in terms of their stability.
+-   As you gradually increase the knob setting (maybe by introducing more food), the two populations "switch places" in terms of their stability.
 
 ## Term 3: Graph (Network)
 
 -   A **graph** is a collection of **nodes** (vertices) connected by **edges** (links), where each edge has an associated **weight** (cost or distance). For my use (via the Bellman-Ford algorithm), the graph can be directed, and edge weights may be negative, enabling the algorithm to find the shortest path from a single source node to all other nodes, even in graphs with negative weights (but no negative weight cycles).
 
-![](images/Shortest_path_Dijkstra_vs_BellmanFord.gif)
+## Network Flow Example
+
+![Shortest path Dijkstra vs Bellman-Ford Algorithms](images/Shortest_path_Dijkstra_vs_BellmanFord.gif){width="792"}
 
 ## Rodents, Foxes, and parasites
 
@@ -105,4 +98,12 @@ Analysis of invasive mutualism?
 
 -   Figuring out locations, costs and attainable time windows.
 
--   Follow the damn directions/prompt!!!
+-   Follow directions!
+
+## Sources
+
+1.  Rosso, A.; Venturino, E. A Dynamic Programming Approach to Ecosystem Management. Algorithms 2023, 16, 139. https://doi.org/10.3390/a16030139
+2.  Rosso, A.; Venturino, E. Comparison of two mathematical models for the Echinococcus multilocularis-red foxes-rodents interactions. Algorithms 2021. https://repositorio.utem.cl/handle/30081993/1172
+3.  Hu, T.C.; Morgenthaler, H.D. Dynamic Programming and Graph Optimization Problems. Comput. Math. Appl. 1994, 27, 53–58.
+4.  Yakowitz, S. Dynamic programming applications in water resources. Water Resour. Res. 1982, 18, 673–696.
+5.  Murray, J.D. Mathematical Biology; Springer: Berlin/Heidelberg, Germany, 1993.

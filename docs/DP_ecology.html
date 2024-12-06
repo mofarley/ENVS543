@@ -365,27 +365,28 @@ Moses Farley
 <section id="term-2-example-using-blank-populations" class="slide level2">
 <h2>Term 2: Example using [blank] populations</h2>
 <ul>
-<li><p>State A: low population &amp; State B: high population</p></li>
-<li><p>Before the switch (low knob setting):</p>
+<li>State A: low population &amp; State B: high population</li>
+<li>Before the switch (low knob setting): State A is stable and the population tends to stay low.
 <ul>
-<li><p>State A is stable and the population tends to stay low.</p></li>
-<li><p>State B is unstable - if the population gets too high, something (like lack of food) will cause it to crash back down.</p></li>
+<li>State B is unstable - if the population gets too high, something (like lack of food) will cause it to crash back down.</li>
 </ul></li>
-<li><p>After the switch (high knob setting):</p>
+<li>After the switch (high knob setting): State B is now stable - the population tends to stay high.
 <ul>
-<li><p>State B is now stable - the population tends to stay high.</p></li>
-<li><p>State A is now unstable - if the population gets too low, something (like random deaths) could wipe it out completely.</p></li>
+<li>State A is now unstable - if the population gets too low, something (like random deaths) could wipe it out completely.</li>
 </ul></li>
+<li>As you gradually increase the knob setting (maybe by introducing more food), the two populations “switch places” in terms of their stability.</li>
 </ul>
-<p>As you gradually increase the knob setting (maybe by introducing more food), the two populations “switch places” in terms of their stability.</p>
 </section>
 <section id="term-3-graph-network" class="slide level2">
 <h2>Term 3: Graph (Network)</h2>
 <ul>
 <li>A <strong>graph</strong> is a collection of <strong>nodes</strong> (vertices) connected by <strong>edges</strong> (links), where each edge has an associated <strong>weight</strong> (cost or distance). For my use (via the Bellman-Ford algorithm), the graph can be directed, and edge weights may be negative, enabling the algorithm to find the shortest path from a single source node to all other nodes, even in graphs with negative weights (but no negative weight cycles).</li>
 </ul>
+</section>
+<section id="network-flow-example" class="slide level2">
+<h2>Network Flow Example</h2>
 
-<img data-src="images/Shortest_path_Dijkstra_vs_BellmanFord.gif" class="r-stretch"></section>
+<img data-src="images/Shortest_path_Dijkstra_vs_BellmanFord.gif" width="792" class="r-stretch quarto-figure-center"><p class="caption">Shortest path Dijkstra vs Bellman-Ford Algorithms</p></section>
 <section id="rodents-foxes-and-parasites" class="slide level2">
 <h2>Rodents, Foxes, and parasites</h2>
 <div class="columns">
@@ -452,8 +453,18 @@ Moses Farley
 </ul></li>
 <li><p>Better background on how to obtain sample data (no data availability for Torino study)</p></li>
 <li><p>Figuring out locations, costs and attainable time windows.</p></li>
-<li><p>Follow the damn directions/prompt!!!</p></li>
+<li><p>Follow directions!</p></li>
 </ul>
+</section>
+<section id="sources" class="slide level2">
+<h2>Sources</h2>
+<ol type="1">
+<li>Rosso, A.; Venturino, E. A Dynamic Programming Approach to Ecosystem Management. Algorithms 2023, 16, 139. https://doi.org/10.3390/a16030139</li>
+<li>Rosso, A.; Venturino, E. Comparison of two mathematical models for the Echinococcus multilocularis-red foxes-rodents interactions. Algorithms 2021. https://repositorio.utem.cl/handle/30081993/1172</li>
+<li>Hu, T.C.; Morgenthaler, H.D. Dynamic Programming and Graph Optimization Problems. Comput. Math. Appl. 1994, 27, 53–58.</li>
+<li>Yakowitz, S. Dynamic programming applications in water resources. Water Resour. Res. 1982, 18, 673–696.</li>
+<li>Murray, J.D. Mathematical Biology; Springer: Berlin/Heidelberg, Germany, 1993.</li>
+</ol>
 <div class="quarto-auto-generated-content">
 <div class="footer footer-default">
 
