@@ -1,0 +1,110 @@
+---
+title: "591 Presentation"
+author: "Moses Farley"
+format: revealjs
+editor: visual
+---
+
+# Ecological Management
+
+## Inspiration
+
+[![](images/dp_ecosystem.png)](https://www.mdpi.com/1999-4893/16/3/139)
+
+## Term 1: Dynamic Systems
+
+-   Definition: Systems that change over time, influenced by internal and external factors
+
+-   Ecological Relevance: Interconnected components of ecosystems (e.g. populations, resources, climate, etc...)
+
+-   Key components:
+
+    -   Non-linearity: Small changes can lead to large effects
+
+    -   Feedback loops: Interactions between components can amplify or dampen changes
+
+    -   Emergent properties: complex patterns arise from simple interactions
+
+## Term 2: Transcritical Bifurcation
+
+-   Two states exist (one is stable, the other is unstable).
+
+-   A smooth change in a parameter causes them to swap stability. Imagine the "smooth change" as a turning a knob.
+
+-   Really simplified definition without getting in differential equations, eigenvalues (I'm not able to cover lol)
+
+## Term 2: Example using \[blank\] populations
+
+-   State A: low population & State B: high population
+
+-   Before the switch (low knob setting):
+
+    -   State A is stable and the population tends to stay low.
+
+    -   State B is unstable - if the population gets too high, something (like lack of food) will cause it to crash back down.
+
+-   After the switch (high knob setting):
+
+    -   State B is now stable - the population tends to stay high.
+
+    -   State A is now unstable - if the population gets too low, something (like random deaths) could wipe it out completely.
+
+As you gradually increase the knob setting (maybe by introducing more food), the two populations "switch places" in terms of their stability.
+
+## Term 3: Graph (Network)
+
+-   A **graph** is a collection of **nodes** (vertices) connected by **edges** (links), where each edge has an associated **weight** (cost or distance). For my use (via the Bellman-Ford algorithm), the graph can be directed, and edge weights may be negative, enabling the algorithm to find the shortest path from a single source node to all other nodes, even in graphs with negative weights (but no negative weight cycles).
+
+![](images/Shortest_path_Dijkstra_vs_BellmanFord.gif)
+
+## Rodents, Foxes, and parasites
+
+::: columns
+::: {.column width="50%"}
+![Figure 1. The graph of the equilibria for system (1) and the transcritical bifurcations relating them.](images/DP_foxes.png){fig-alt="" fig-align="left" width="400"}
+:::
+
+::: {.column width="50%"}
+Healthy foxes F, healthy rodents S, infected foxes C and infected rodents I populations, AM is dependency on all four mortality parameters (0 represent erradication). Natural and disease-induced mortalities, m, n, µ, ν for healthy foxes and rodents, and infected foxes and rodents, respectively.
+:::
+:::
+
+## Path-finding Example
+
+::: columns
+::: {.column width="33%"}
+![Figure 1. The graph of the equilibria for system (1) and the transcritical bifurcations relating them.](images/DP_foxes.png){fig-alt="" fig-align="left" width="400"}
+:::
+
+::: {.column width="33%"}
+![Parasite and Rodent Free Equilibrium](images/fox_dest.png){fig-alt="" fig-align="left" width="400"}
+:::
+
+::: {.column width="33%"}
+![Figure 3. The optimal path (in red) corresponding to Parasite and Rodent Free](images/fox_path.png){fig-alt="" fig-align="left" width="400"}
+:::
+:::
+
+## Applications for Moses & Applied Ecology
+
+Analysis of invasive mutualism?
+
+-   Spotted lantern fly and Ailanthus
+
+-   Fig trees and wasps
+
+-   Fir trees and fungus
+
+## Needs for me (improvement)
+
+-   Better understanding of bifurcation theory\\differential equations
+
+    -   Equation crucial to the Dynamic Programming aspect is mass action disease incidence (homogeneous populations mixing) equation.
+
+    -   ![Mass action disease incidence](images/equation.png){width="447"}
+
+-   Better background on how to obtain sample data (no data availability for Torino study)
+
+-   Figuring out locations, costs and attainable time windows.
+
+-   Follow the damn directions/prompt!!!
